@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: spring-music-ingress
+  namespace: default
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: spring-music.pcld.busanbank.co.kr
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: spring-music
+              servicePort: 8080

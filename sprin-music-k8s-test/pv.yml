@@ -1,0 +1,20 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: app-cephfs-pv
+  labels:
+    storage-tier: ci
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  cephfs:
+    monitors:
+      - 172.32.10.91:6789
+    path: /k8sdis1ci
+    user: admin
+    secretRef:
+      name: ceph-admin-secret
+    readOnly: false
+  persistentVolumeReclaimPolicy: Retain

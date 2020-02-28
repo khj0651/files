@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: spring-music-cephfs
+  name: spring-music-cephfs
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-music-cephfs
+  template:
+    metadata:
+      labels:
+        app: spring-music-cephfs
+    spec:
+      containers:
+      - image: registry.pcld.busanbank.co.kr:5000/sample/spring-music:cephfs-1.0
+        name: spring-music-cephfs
+        env:
+        - name: DATABASE
+          value: in-memory 
+        - name: MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-galera-config
+              key: db.address
+        - name: MYSQL_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-galera-config
+              key: db.port
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-galera-config
+              key: db.user
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-galera-config
+              key: db.password
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+          - name: pvc
+            mountPath: "/app/volumes"
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+        - name: pvc
+          persistentVolumeClaim:
+            claimName: app-cephfs-claim
